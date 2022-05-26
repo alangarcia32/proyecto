@@ -1,5 +1,5 @@
 import tkinter as tk
-#import MySQL.connector
+import MySQL.connector
 #mydb = connection.MySQLConnection(user="maybe", password="ydI4I5Bg", host="localhost", database="proyecto")
 
 height = 450
