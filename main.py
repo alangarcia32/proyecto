@@ -1,9 +1,47 @@
 import tkinter as tk
-import MySQL.connector
-#mydb = connection.MySQLConnection(user="maybe", password="ydI4I5Bg", host="localhost", database="proyecto")
+import mysql.connector
 
 height = 450
 width = 800
+
+dbConfig = {
+  'user': 'admin',
+  'password': 'rotoplas77',
+  'host': 'crud.copdm5l66brq.us-east-1.rds.amazonaws.com',
+  'database': 'crud',
+  'raise_on_warnings': True
+}
+# mydb = connection.MySQLConnection(user="maybe", password="ydI4I5Bg", host="localhost", database="proyecto")
+
+
+try:
+  dbconn  = mysql.connector.connect(**dbConfig)
+
+  sql_select_Query = "select * from articulos"
+  cursor = dbconn.cursor()
+  cursor.execute(sql_select_Query)
+
+  # extraer todos los articulos
+  records = cursor.fetchall()
+  print("Total de articulos: ", cursor.rowcount)
+
+  print("\n Imprimiendo cada registro")
+  print("id \t",  "nombre \t",  "detalle \t" ,"precio \t", "contenido ", "\n")
+  for row in records:
+      print( row[0],"\t",  row[1],"\t",  row[2],"\t",  row[3],"\t",  row[4], "\n")
+
+except mysql.connector.Error as err:
+  if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+    print("Something is wrong with your user name or password")
+  elif err.errno == errorcode.ER_BAD_DB_ERROR:
+    print("Database does not exist")
+  else:
+    print(err)
+finally:
+    if dbconn.is_connected():
+        dbconn.close()
+        cursor.close()
+        print("MySQL connection is closed")
 
 root = tk.Tk()
 root.title("HOLLY HULI")
