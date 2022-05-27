@@ -5,10 +5,10 @@ height = 450
 width = 800
 
 dbConfig = {
-  'user': 'admin',
-  'password': 'rotoplas77',
-  'host': 'crud.copdm5l66brq.us-east-1.rds.amazonaws.com',
-  'database': 'crud',
+  'user': '',
+  'password': '',
+  'host': '',
+  'database': '',
   'raise_on_warnings': True
 }
 # mydb = connection.MySQLConnection(user="maybe", password="ydI4I5Bg", host="localhost", database="proyecto")
