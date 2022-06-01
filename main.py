@@ -18,7 +18,6 @@ dbConfig = {
 }
 # mydb = connection.MySQLConnection(user="maybe", password="butter", host="localhost", database="crud")
 # user="root", password="huli"
-global tree
 articulos = []
 
 def connection():
@@ -59,8 +58,8 @@ def dbList():
     close()
 
 def tabla():
-    columns = ('id', 'nombre', 'desc', "precio", "content")
-    tree = ttk.Treeview(frame1, columns=columns, show='headings')
+   
+    tree.place(rely=0.3, relx=0.04, relheight=0.65, relwidth=0.75)
 
     tree.heading('id', text='Id')
     tree.heading('nombre', text='Nombre')
@@ -143,7 +142,7 @@ def item_selected(event):
         item = tree.item(selected_item)
         record = item['values']
         # show a message
-        showinfo(title='Information', message=','.join(record))
+        #showinfo(title='Information', message=','.join(record))
 
 
 def DBdelete():
@@ -247,6 +246,10 @@ salir = Button(frame1, text="SALIR", bg="#EA5455", fg="white", font="Raleway 12 
                    activeforeground="black", relief="flat", highlightcolor="#112D4E", command=salir0)
 search = Button(frame1, text="Buscar", bg="#205375", fg="#EFEFEF", font="Raleway 12 bold", padx=7, pady=7, activebackground="black", \
                    activeforeground="white", relief="flat", highlightcolor="#112D4E")     
+
+
+columns = ('id', 'nombre', 'desc', "precio", "content")
+tree = ttk.Treeview(frame1, columns=columns, show='headings')
 
 pop_up = Tk()
 pop_up.title("EDITAR")
