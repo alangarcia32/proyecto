@@ -1,12 +1,10 @@
-#import tkinter as tk
-#import tkinter as ttk
-
-from cgi import test
-from itertools import count
 from tkinter import *
 from tkinter import messagebox
+
 import tkinter.ttk as ttk
 import mysql.connector
+import tkinter.messagebox as tkMessageBox
+from tkinter.messagebox import showinfo
 
 height = 450
 width = 800
@@ -15,12 +13,12 @@ dbConfig = {
   'user': '',
   'password': '',
   'host': '',
-  'database': '',
+  'database': 'crud',
   'raise_on_warnings': True
 }
 # mydb = connection.MySQLConnection(user="maybe", password="butter", host="localhost", database="crud")
 # user="root", password="huli"
-
+articulos = []
 
 def connection():
     global dbconn, cursor
@@ -42,27 +40,48 @@ def connection():
       else:
         print(err)
 
+def close():
+    if dbconn.is_connected():
+        dbconn.close()
+        cursor.close()
+        print("MySQL connection is closed")
+
 def dbList():
-    
     connection()
-    cursor.execute("SELECT * FROM `articulos` ORDER BY `nombre` ASC")
+    cursor.execute("SELECT * FROM `articulos` ORDER BY `nombre` DESC")
     fetch = cursor.fetchall()
+    
+    articulos.clear()
     for data in fetch:
         articulos.append((data[0], data[1], data[2], data[3], data[4]))
-    close()
     print("Successfully read the data from database")
+    close()
 
-def close():
-        if dbconn.is_connected():
-            dbconn.close()
-            cursor.close()
-            print("MySQL connection is closed")
+def tabla():
+   
+    tree.place(rely=0.3, relx=0.04, relheight=0.65, relwidth=0.75)
+
+    tree.heading('id', text='Id')
+    tree.heading('nombre', text='Nombre')
+    tree.heading('desc', text='Descripcion')
+    tree.heading('precio', text='Precio')
+    tree.heading('content', text='Contenido')
+
+    dbList()
+    tree.delete(*tree.get_children())
+    # add data to the treeview
+    for articulo in articulos:
+        tree.insert('', 'end', values=articulo)
+
+    tree.bind('<<TreeviewSelect>>', item_selected)
+
+    tree.grid(row=0, column=0, sticky='nsew')
+    tree.place(rely=0.3, relx=0.04, relheight=0.65, relwidth=0.75)
 
 root = Tk()
 root.title("HOLLY HULI")
 
-def func1():
-    connection()
+def ventana1():
     frame2.place(relwidth=1, relheight=1)
     label1.place(relheight=0.2, relwidth=1)
     label2.place(rely=0.15, relx=0.04, relheight=0.18, relwidth=0.36)
@@ -76,33 +95,17 @@ def func1():
     boton3.place(rely=0.68, relx=0.56, relheight=0.14, relwidth=0.2)
     nope.place(rely=0.68, relx=0.21, relheight=0.14, relwidth=0.2)
 
-def func2():
-    connection()
-    frame3.place(relwidth=1, relheight=1)
-    label6.place(relheight=0.18, relwidth=1)
-    data5.place(rely=0.18, relx=0.13, relheight=0.06, relwidth=0.6)
-    boton4.place(rely=0.45, relx=0.75, relheight=0.13, relwidth=0.2)
-    boton5.place(rely=0.65, relx=0.75, relheight=0.13, relwidth=0.2)
-    table.place(rely=0.3, relx=0.04, relheight=0.63, relwidth=0.65)
-    buscar.place(rely=0.18, relx=0.74, relheight=0.06, relwidth=0.12)
-
-def func3():
-    connection()
+def ventana2():
+    tabla()
     frame1.place(relwidth=1, relheight=1)
     busqueda.place(rely=0.07, relx=0.04, relheight=0.06, relwidth=0.6)
     search.place(rely=0.07, relx=0.65, relheight=0.06, relwidth=0.12)  
-    table1.place(rely=0.3, relx=0.04, relheight=0.65, relwidth=0.75)
-    titulo.place(rely=0.18, relx=0.08, relheight=0.08, relwidth=0.6)
-    guardar.place(rely=0.5, relx=0.82, relheight=0.1, relwidth=0.15)
-    salir.place(rely=0.7, relx=0.82, relheight=0.1, relwidth=0.15)
+    titulo.place(rely=0.18, relx=0.04, relheight=0.08, relwidth=0.75)
+    borrar.place(rely=0.4, relx=0.81, relheight=0.1, relwidth=0.17)
+    editar.place(rely=0.6, relx=0.81, relheight=0.1, relwidth=0.17)
+    salir.place(rely=0.8, relx=0.81, relheight=0.1, relwidth=0.17)
 
-def salir1():
-    frame3.place_forget()
-    data5.delete(0, 100)
-    close()
-    frame.place()
-
-def func5():
+def DBguardar():
     nombre = str(data1.get())
     desc = str(data2.get())
     contenido = str(data4.get())
@@ -111,19 +114,56 @@ def func5():
     if(nombre=="" or desc=="" or contenido=="" or precio==""):
       messagebox.showwarning("INCORRECTO","Todos los campos deben ser llenados")
     else:
+      connection()
       cursor.execute("INSERT INTO `articulos` (nombre, detalle, precio, contenido) VALUES(%s, %s, %s, %s)",
                 (nombre, desc, precio, contenido))
       cursor.execute("commit")
+      frame2.place_forget()
+      data1.delete(0, 100)
+      data2.delete(0, 100)
+      data3.delete(0, 100)
+      data4.delete(0, 100)
+      id_pop.delete(0, 100)
+      close()
+      frame.place()
+      messagebox.showinfo("GUARDADO","Se guardo el registro\t")
 
-    frame2.place_forget()
-    data1.delete(0, 100)
-    data2.delete(0, 100)
-    data3.delete(0, 100)
-    data4.delete(0, 100)
-    id_pop.delete(0, 100)
-    close()
-    frame.place()
-    messagebox.showinfo("GUARDADO","Se guardo el registro\t")
+def DBedit():
+    pop_up.deiconify()
+    name.place(rely=0.25, relx=0.04, relheight=0.15, relwidth=0.2)
+    detail.place(rely=0.25, relx=0.25, relheight=0.15, relwidth=0.2)
+    price.place(rely=0.25, relx=0.5, relheight=0.15, relwidth=0.2)
+    neto.place(rely=0.25, relx=0.65, relheight=0.15, relwidth=0.2)
+    save.place(rely=0.65, relx=0.2, relheight=0.2, relwidth=0.22)
+    exit.place(rely=0.65, relx=0.6, relheight=0.2, relwidth=0.22)
+
+def item_selected(event):
+    for selected_item in tree.selection():
+        item = tree.item(selected_item)
+        record = item['values']
+        # show a message
+        #showinfo(title='Information', message=','.join(record))
+
+
+def DBdelete():
+    if not tree.selection():
+        messagebox.showwarning("ERROR", "Favor de seleccionar una fila")
+    else:
+        result = tkMessageBox.askquestion('CANCELAR', 'Estas seguro que quieres borrar la fila', icon="warning")
+        if result == 'yes':
+            curItem = tree.focus()
+            contents =(tree.item(curItem))
+            selecteditem = contents['values']
+            
+            connection()
+            cursor.execute("DELETE FROM `articulos` WHERE `id` = %d" % selecteditem[0])
+            cursor.execute("commit")
+            messagebox.showinfo(title="Registro ah sido borrado")
+
+            tree.delete(curItem)
+            close()
+            frame1.place_forget()
+            frame.place()
 
 def salir2():
     frame2.place_forget()
@@ -131,38 +171,23 @@ def salir2():
     data2.delete(0, 100)
     data3.delete(0, 100)
     data4.delete(0, 100)
-    id_pop.delete(0, 100)
-    close()
     frame.place()
 
-def func7():
-    frame3.place_forget()
-
-    #guardar el campo antes de vaciarlo
-
-    data5.delete(0, 100)
-    close()
-    frame.place()
-    messagebox.showinfo("GUARDADO","Se ha guadado los cambios\t")
-
-def inicio_save():
-    frame1.place_forget()
-
-    
-    selecteditem = int(id.get())################
-    cursor.execute("DELETE FROM `articulos` WHERE `id` = %d" % selecteditem)
-
-
-    busqueda.delete(0,100)
-    close()
-    frame.place()
-    messagebox.showinfo("GUARDADO","Se ah borrado la fila\t")
-
-def inicio_can():
+def salir0():
     frame1.place_forget()
     busqueda.delete(0,100)
-    close()
     frame.place()
+
+def escape():
+    name.delete(0, 100)
+    detail.delete(0, 100)
+    price.delete(0, 100)
+    neto.delete(0, 100)
+    pop_up.withdraw()
+    frame.place()
+
+def CloseWindow():
+    root.quit()
 
 #### This is the main frame ####
 
@@ -176,18 +201,18 @@ label = Label(frame, text="¿Qué le gustaría hacer?", bg="#222831", fg="gray",
 label.place(relheight=0.5, relwidth=1)
 
 boton1 = Button(frame, text="Agregar Productos", bg="#00ADB5", fg="black", font="Raleway 11 bold", padx=7, pady=7, activebackground="black",\
-                    activeforeground="white", relief="flat", highlightcolor="#112D4E", command=func1)
-boton1.place(rely=0.6, relx=0.12, relheight=0.15, relwidth=0.22)
+                    activeforeground="white", relief="flat", highlightcolor="#112D4E", command=ventana1)
+boton1.place(rely=0.6, relx=0.1, relheight=0.15, relwidth=0.22)
 
-boton2 = Button(frame, text="Editar Productos", bg="#00ADB5", fg="black", font="Raleway 11 bold", padx=7, pady=7, activebackground="black",\
-                    activeforeground="white", relief="flat", highlightcolor="#112D4E", command=func2)
-boton2.place(rely=0.6, relx=0.39, relheight=0.15, relwidth=0.22)
+boton2 = Button(frame, text="Editar Tablas", bg="#00ADB5", fg="black", font="Raleway 11 bold", padx=7, pady=7, activebackground="black",\
+                    activeforeground="white", relief="flat", highlightcolor="#112D4E", command=ventana2)
+boton2.place(rely=0.6, relx=0.4, relheight=0.15, relwidth=0.22)
 
-boton2 = Button(frame, text="Eliminar Fila", bg="#00ADB5", fg="black", font="Raleway 11 bold", padx=7, pady=7, activebackground="black",\
-                    activeforeground="white", relief="flat", highlightcolor="#112D4E", command=func3)
-boton2.place(rely=0.6, relx=0.66, relheight=0.15, relwidth=0.22)
+cerrar= Button(frame, text="Cerra el Programa", bg="#00ADB5", fg="black", font="Raleway 11 bold", padx=7, pady=7, activebackground="black",\
+                    activeforeground="white", relief="flat", highlightcolor="#112D4E", command=CloseWindow)
+cerrar.place(rely=0.6, relx=0.7, relheight=0.15, relwidth=0.22)
 
-#### This is the secund frame ####
+#### This is the first frame ####
 
 frame2 = Frame(root, bg="#222831")
 label1 = Label(frame2, text="Ingrese los datos necesarios", bg="#222831", fg="gray", font="Ubuntu 18 bold", padx=20, pady=20)
@@ -200,77 +225,46 @@ data3 = Entry(frame2, bg="#0D7377", font="Poppins 11 bold", fg="white", relief="
 label5 = Label(frame2, text="Cantidad de contenido del producto:", bg="#222831", fg="gray", font="Poppins 11 bold", padx=20, pady=20)
 data4 = Entry(frame2, bg="#0D7377", font="Poppins 11 bold", fg="white", relief="flat", justify="center")
 boton3 = Button(frame2, text="GUARDAR", bg="#00ADB5", fg="black", font="Raleway 12 bold", padx=7, pady=7,activebackground="black", \
-                   activeforeground="white", relief="flat", highlightcolor="#112D4E", command=func5)
+                   activeforeground="white", relief="flat", highlightcolor="#112D4E", command=DBguardar)
 nope = Button(frame2, text="CANCELAR", bg="#EA5455", fg="white", font="Raleway 12 bold", padx=7, pady=7,activebackground="gray", \
                    activeforeground="black", relief="flat", highlightcolor="#112D4E", command=salir2)
 label_pop = Label(frame2, text="Ingrese el nummero ID:", bg="#222831", fg="gray", font="Poppins 11 bold", padx=20, pady=20)
 id_pop = Entry(frame2, bg="#0D7377", font="Poppins 11 bold", fg="white", relief="flat", justify="center")
 
-
-#### This is the third frame ####
-
-frame3 = Frame(root, bg="#222831")
-label6 = Label(frame3, text="Edita los Productos", bg="#222831", fg="gray", font="Ubuntu 18 bold", padx=20, pady=20)
-data5 = Entry(frame3, bg="#0D7377", font="Poppins 13 bold", fg="white", relief="flat", justify="left")
-table = ttk.Treeview(frame3)
-boton4 = Button(frame3, text="GUARDAR", bg="#00ADB5", fg="black", font="Raleway 12 bold", padx=7, pady=7, activebackground="black", \
-                   activeforeground="white", relief="flat", highlightcolor="#112D4E", command=func7)
-boton5 = Button(frame3, text="CANCELAR", bg="#EA5455", fg="white", font="Raleway 12 bold", padx=7, pady=7,activebackground="gray", \
-                   activeforeground="black", relief="flat", highlightcolor="#112D4E", command=salir1)
-buscar = Button(frame3, text="Buscar", bg="#205375", fg="#EFEFEF", font="Raleway 12 bold", padx=7, pady=7, activebackground="black", \
-                   activeforeground="white", relief="flat", highlightcolor="#112D4E") 
-
-#### This is the forth frame ####
+#### This is the thrid frame ####
 
 frame1 = Frame(root, bg="#222831")
-titulo = Label(frame1, text="Selecciona la fila que quieres borrar y dale al boton aceptar", bg="#222831", fg="gray", font="Ubuntu 12 bold", padx=20, pady=20)
+titulo = Label(frame1, text="Selecciona la fila que quires usar y escoge una de los botenes de la derecha", bg="#222831", \
+                   fg="gray", font="Ubuntu 12 bold", padx=20, pady=20)
 busqueda = Entry(frame1, bg="#0D7377", font="Poppins 13 bold", fg="white", relief="flat", justify="left")
+
+editar = Button(frame1, text="EDITAR FILA", bg="#00ADB5", fg="black", font="Raleway 12 bold", padx=7, pady=7, activebackground="black", \
+                   activeforeground="white", relief="flat", highlightcolor="#112D4E", command=DBedit)
+borrar = Button(frame1, text="BORRAR FILA", bg="#00ADB5", fg="black", font="Raleway 12 bold", padx=7, pady=7, activebackground="black", \
+                   activeforeground="white", relief="flat", highlightcolor="#112D4E", command=DBdelete)
+salir = Button(frame1, text="SALIR", bg="#EA5455", fg="white", font="Raleway 12 bold", padx=7, pady=7,activebackground="gray", \
+                   activeforeground="black", relief="flat", highlightcolor="#112D4E", command=salir0)
+search = Button(frame1, text="Buscar", bg="#205375", fg="#EFEFEF", font="Raleway 12 bold", padx=7, pady=7, activebackground="black", \
+                   activeforeground="white", relief="flat", highlightcolor="#112D4E")     
+
 
 columns = ('id', 'nombre', 'desc', "precio", "content")
 tree = ttk.Treeview(frame1, columns=columns, show='headings')
 
-# define headings
-tree.heading('id', text='Id')
-tree.heading('nombre', text='Nombre')
-tree.heading('desc', text='Descripcion')
-tree.heading('precio', text='Precio')
-tree.heading('content', text='Contenido')
-
-articulos = []
-dbList()
-tree.delete(*tree.get_children())
-# add data to the treeview
-for articulo in articulos:
-    tree.insert('', 'end', values=articulo)
-
-def item_selected(event):
-    for selected_item in tree.selection():
-        item = tree.item(selected_item)
-        record = item['values']
-        # show a message
-        showinfo(title='Information', message=','.join(record))
-
-
-tree.bind('<<TreeviewSelect>>', item_selected)
-
-tree.grid(row=0, column=0, sticky='nsew')
-
-# add a scrollbar
-#scrollbar = ttk.Scrollbar(root, orient=tk.VERTICAL, command=tree.yview)
-#tree.configure(yscroll=scrollbar.set)
-#scrollbar.grid(row=0, column=1, sticky='ns')
-
-#guardar = Button(frame1, text="ACEPTAR", bg="#00ADB5", fg="black", font="Raleway 12 bold", padx=7, pady=7, activebackground="black", \
-#                   activeforeground="white", relief="flat", highlightcolor="#112D4E", command=inicio_save)
-#salir = Button(frame1, text="CANCELAR", bg="#EA5455", fg="white", font="Raleway 12 bold", padx=7, pady=7,activebackground="gray", \
-#                   activeforeground="black", relief="flat", highlightcolor="#112D4E", command=inicio_can)
-#search = Button(frame1, text="Buscar", bg="#205375", fg="#EFEFEF", font="Raleway 12 bold", padx=7, pady=7, activebackground="black", \
-#                   activeforeground="white", relief="flat", highlightcolor="#112D4E")     
-
-
-
-#records = cursor.fetchall()
-#print("Total de articulos: ", cursor.rowcount)
-
+pop_up = Tk()
+pop_up.title("EDITAR")
+canvas2 = Canvas(pop_up, height=200, width=700)
+canvas2.pack()
+taco = Frame(canvas2, bg="#222831")
+taco.place(relwidth=1, relheight=1)
+pop_up.withdraw()
+name = Entry(pop_up, bg="#0D7377", font="Poppins 11 bold", fg="white", relief="flat", justify="center")
+detail = Entry(pop_up, bg="#0D7377", font="Poppins 11 bold", fg="white", relief="flat", justify="center")
+price = Entry(pop_up, bg="#0D7377", font="Poppins 11 bold", fg="white", relief="flat", justify="center")
+neto = Entry(pop_up, bg="#0D7377", font="Poppins 11 bold", fg="white", relief="flat", justify="center")
+save = Button(pop_up, text="BORRAR FILA", bg="#00ADB5", fg="black", font="Raleway 12 bold", padx=7, pady=7, activebackground="black", \
+                   activeforeground="white", relief="flat", highlightcolor="#112D4E")
+exit = Button(pop_up, text="Cancelar", bg="#EA5455", fg="white", font="Raleway 12 bold", padx=7, pady=7,activebackground="gray", \
+                   activeforeground="black", relief="flat", highlightcolor="#112D4E", command=escape)
 
 root.mainloop()
