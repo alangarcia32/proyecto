@@ -1,22 +1,25 @@
 from tkinter import *
 from tkinter import messagebox
+
 import tkinter.ttk as ttk
 import mysql.connector
 import tkinter.messagebox as tkMessageBox
+from tkinter.messagebox import showinfo
 
 height = 450
 width = 800
 
 dbConfig = {
-  'user': '',
-  'password': '',
-  'host': '',
-  'database': '',
+  'user': 'admin',
+  'password': 'rotoplas77',
+  'host': 'crud.copdm5l66brq.us-east-1.rds.amazonaws.com',
+  'database': 'crud',
   'raise_on_warnings': True
 }
 # mydb = connection.MySQLConnection(user="maybe", password="sbutter", host="localhost", database="crud")
 # user="root", password="huli"
-global tree, articulos
+global tree
+articulos = []
 
 def connection():
     global dbconn, cursor
@@ -38,16 +41,6 @@ def connection():
       else:
         print(err)
 
-def dbList():
-    
-    connection()
-    cursor.execute("SELECT * FROM `articulos` ORDER BY `nombre` ASC")
-    fetch = cursor.fetchall()
-    for data in fetch:
-        articulos.append((data[0], data[1], data[2], data[3], data[4]))
-    close()
-    print("Successfully read the data from database")
-
 def close():
     if dbconn.is_connected():
         dbconn.close()
@@ -58,9 +51,9 @@ def dbList():
     connection()
     cursor.execute("SELECT * FROM `articulos` ORDER BY `nombre` DESC")
     fetch = cursor.fetchall()
-    articulos = []
+    
+    articulos.clear()
     for data in fetch:
-        #global articulos
         articulos.append((data[0], data[1], data[2], data[3], data[4]))
     print("Successfully read the data from database")
     close()
@@ -76,14 +69,13 @@ def tabla():
     tree.heading('precio', text='Precio')
     tree.heading('content', text='Contenido')
 
-    articulos = []
     dbList()
     tree.delete(*tree.get_children())
     # add data to the treeview
     for articulo in articulos:
         tree.insert('', 'end', values=articulo)
 
-    #tree.bind('<<TreeviewSelect>>', item_selected)
+    tree.bind('<<TreeviewSelect>>', item_selected)
 
     tree.grid(row=0, column=0, sticky='nsew')
 
@@ -91,7 +83,6 @@ root = Tk()
 root.title("HOLLY HULI")
 
 def ventana1():
-    connection()
     frame2.place(relwidth=1, relheight=1)
     label1.place(relheight=0.2, relwidth=1)
     label2.place(rely=0.15, relx=0.04, relheight=0.18, relwidth=0.36)
@@ -107,7 +98,6 @@ def ventana1():
 
 def ventana2():
     tabla()    
-    connection()
     frame1.place(relwidth=1, relheight=1)
     busqueda.place(rely=0.07, relx=0.04, relheight=0.06, relwidth=0.6)
     search.place(rely=0.07, relx=0.65, relheight=0.06, relwidth=0.12)  
@@ -125,6 +115,7 @@ def DBguardar():
     if(nombre=="" or desc=="" or contenido=="" or precio==""):
       messagebox.showwarning("INCORRECTO","Todos los campos deben ser llenados")
     else:
+      connection()
       cursor.execute("INSERT INTO `articulos` (nombre, detalle, precio, contenido) VALUES(%s, %s, %s, %s)",
                 (nombre, desc, precio, contenido))
       cursor.execute("commit")
@@ -141,28 +132,31 @@ def DBguardar():
 def DBedit():
     pop_up.deiconify()
 
-'''
+
 def item_selected(event):
     for selected_item in tree.selection():
         item = tree.item(selected_item)
         record = item['values']
         # show a message
         showinfo(title='Information', message=','.join(record))
-'''
+
 
 def DBdelete():
     if not tree.selection():
-        messagebox.showwarning("ERROR", "Please select an item first")
+        messagebox.showwarning("ERROR", "Favor de seleccionar una fila")
     else:
         result = tkMessageBox.askquestion('CANCELAR', 'Estas seguro que quieres borrar la fila', icon="warning")
         if result == 'yes':
             curItem = tree.focus()
             contents =(tree.item(curItem))
             selecteditem = contents['values']
-            tree.delete(curItem)
+            
+            connection()
             cursor.execute("DELETE FROM `articulos` WHERE `id` = %d" % selecteditem[0])
             cursor.execute("commit")
-            messagebox.showinfo(text="Registro ah sido guardado")
+            messagebox.showinfo(text="Registro ah sido borrado")
+
+            tree.delete(curItem)
             close()
             frame1.place_forget()
             frame.place()
@@ -173,13 +167,11 @@ def salir2():
     data2.delete(0, 100)
     data3.delete(0, 100)
     data4.delete(0, 100)
-    close()
     frame.place()
 
 def salir0():
     frame1.place_forget()
     busqueda.delete(0,100)
-    close()
     frame.place()
 
 def escape():
@@ -188,7 +180,6 @@ def escape():
     price.delete(0, 100)
     neto.delete(0, 100)
     pop_up.withdraw()
-    close()
     frame.place()
 
 #### This is the main frame ####
