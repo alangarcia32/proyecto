@@ -10,9 +10,9 @@ height = 450
 width = 800
 
 dbConfig = {
-  'user': 'maybe',
-  'password': 'butter',
-  'host': 'localhost',
+  'user': '',
+  'password': '',
+  'host': '',
   'database': 'crud',
   'raise_on_warnings': True
 }
@@ -128,19 +128,41 @@ def DBguardar():
       frame.place()
       messagebox.showinfo("GUARDADO","Se guardo el registro\t")
 
-def DBedit():
+def dbUpdate():
+    _name = str(name.get())
+    _detail = str(detail.get())
+    _price = str(data3.get())
+    _neto = str(data4.get())
+    _id = int(currId)
+
+    print(_id)
+
+    if(name=="" or detail=="" or price=="" or neto==""):
+      messagebox.showwarning("INCORRECTO","Todos los campos deben ser llenados")
+    else:
+      connection()
+      cursor.execute("UPDATE `articulos` SET `nombre` = %s, `detalle` = %s, `precio` = %s,  `contenido` = %s WHERE `id` = %s ", (_name, _detail, _price, _neto, _id ))
+      cursor.execute("commit")
+      close()
+
+    name.delete(0, 100)
+    detail.delete(0, 100)
+    price.delete(0, 100)
+    neto.delete(0, 100)
+    pop_up.withdraw()
+    messagebox.showinfo("BIEN","Se registro el cambio")
+
+def edit():
+    global currId
+
     if not tree.selection():
         messagebox.showwarning("ERROR", "Favor de seleccionar una fila")
     else:
         curItem = tree.focus()
         contents =(tree.item(curItem))
         selecteditem = contents['values']
-            
-        connection()
-        cursor.execute("INSERT INTO 'name, detail, price, neto` WHERE `id` = %d" % selecteditem[0])
-        cursor.execute("commit")
-
-        #tree.delete(curItem)
+         
+        #print(selecteditem)    
         
         pop_up.deiconify()
         name.place(rely=0.25, relx=0.04, relheight=0.15, relwidth=0.2)
@@ -149,7 +171,13 @@ def DBedit():
         neto.place(rely=0.25, relx=0.75, relheight=0.15, relwidth=0.2)
         save.place(rely=0.65, relx=0.2, relheight=0.2, relwidth=0.22)
         exit.place(rely=0.65, relx=0.6, relheight=0.2, relwidth=0.22)
-        close()
+        
+        name.insert(0,selecteditem[1])
+        detail.insert(0,selecteditem[2])
+        price.insert(0,selecteditem[3])
+        neto.insert(0,selecteditem[4])
+        currId = selecteditem[0]
+        print(currId)
 
 def item_selected(event):
     for selected_item in tree.selection():
@@ -173,26 +201,6 @@ def DBdelete():
 
             tree.delete(curItem)
             close()
-
-def update():
-    name = str(data1.get())
-    detail = str(data2.get())
-    price = str(data3.get())
-    neto = str(data4.get())
-
-    if(name=="" or detail=="" or price=="" or neto==""):
-      messagebox.showwarning("INCORRECTO","Todos los campos deben ser llenados")
-    else:
-      connection()
-      cursor.execute("UPDATE `articulos` SET (nombre, detalle, precio, contenido) where(%s, %s, %s, %s)")
-      cursor.execute("commit")
-
-    name.delete(0, 100)
-    detail.delete(0, 100)
-    price.delete(0, 100)
-    neto.delete(0, 100)
-    pop_up.withdraw()
-    messagebox.showinfo("BIEN","Se registro el cambio")
 
 def salir2():
     frame2.place_forget()
@@ -267,7 +275,7 @@ titulo = Label(frame1, text="Selecciona la fila que quires usar y escoge una de 
 busqueda = Entry(frame1, bg="#0D7377", font="Poppins 13 bold", fg="white", relief="flat", justify="left")
 
 editar = Button(frame1, text="EDITAR FILA", bg="#00ADB5", fg="black", font="Raleway 12 bold", padx=7, pady=7, activebackground="black", \
-                   activeforeground="white", relief="flat", highlightcolor="#112D4E", command=DBedit)
+                   activeforeground="white", relief="flat", highlightcolor="#112D4E", command=edit)
 borrar = Button(frame1, text="BORRAR FILA", bg="#00ADB5", fg="black", font="Raleway 12 bold", padx=7, pady=7, activebackground="black", \
                    activeforeground="white", relief="flat", highlightcolor="#112D4E", command=DBdelete)
 salir = Button(frame1, text="SALIR", bg="#EA5455", fg="white", font="Raleway 12 bold", padx=7, pady=7,activebackground="gray", \
@@ -291,7 +299,7 @@ detail = Entry(pop_up, bg="#0D7377", font="Poppins 11 bold", fg="white", relief=
 price = Entry(pop_up, bg="#0D7377", font="Poppins 11 bold", fg="white", relief="flat", justify="center")
 neto = Entry(pop_up, bg="#0D7377", font="Poppins 11 bold", fg="white", relief="flat", justify="center")
 save = Button(pop_up, text="BORRAR FILA", bg="#00ADB5", fg="black", font="Raleway 12 bold", padx=7, pady=7, activebackground="black", \
-                   activeforeground="white", relief="flat", highlightcolor="#112D4E", command=update)
+                   activeforeground="white", relief="flat", highlightcolor="#112D4E", command=dbUpdate)
 exit = Button(pop_up, text="Cancelar", bg="#EA5455", fg="white", font="Raleway 12 bold", padx=7, pady=7,activebackground="gray", \
                    activeforeground="black", relief="flat", highlightcolor="#112D4E", command=escape)
 
