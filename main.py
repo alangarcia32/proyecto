@@ -12,10 +12,10 @@ height = 450
 width = 800
 
 dbConfig = {
-  'user': 'maybe',
-  'password': 'butter',
-  'host': 'localhost',
-  'database': 'crud',
+  'user': '',
+  'password': '',
+  'host': '',
+  'database': '',
   'raise_on_warnings': True
 }
 # mydb = connection.MySQLConnection(user="maybe", password="butter", host="localhost", database="crud")
@@ -41,6 +41,16 @@ def connection():
         print("Database does not exist")
       else:
         print(err)
+
+def dbList():
+    
+    connection()
+    cursor.execute("SELECT * FROM `articulos` ORDER BY `nombre` ASC")
+    fetch = cursor.fetchall()
+    for data in fetch:
+        articulos.append((data[0], data[1], data[2], data[3], data[4]))
+    close()
+    print("Successfully read the data from database")
 
 def close():
         if dbconn.is_connected():
@@ -215,37 +225,52 @@ buscar = Button(frame3, text="Buscar", bg="#205375", fg="#EFEFEF", font="Raleway
 frame1 = Frame(root, bg="#222831")
 titulo = Label(frame1, text="Selecciona la fila que quieres borrar y dale al boton aceptar", bg="#222831", fg="gray", font="Ubuntu 12 bold", padx=20, pady=20)
 busqueda = Entry(frame1, bg="#0D7377", font="Poppins 13 bold", fg="white", relief="flat", justify="left")
-table1 = ttk.Treeview(frame1)
-guardar = Button(frame1, text="ACEPTAR", bg="#00ADB5", fg="black", font="Raleway 12 bold", padx=7, pady=7, activebackground="black", \
-                   activeforeground="white", relief="flat", highlightcolor="#112D4E", command=inicio_save)
-salir = Button(frame1, text="CANCELAR", bg="#EA5455", fg="white", font="Raleway 12 bold", padx=7, pady=7,activebackground="gray", \
-                   activeforeground="black", relief="flat", highlightcolor="#112D4E", command=inicio_can)
-search = Button(frame1, text="Buscar", bg="#205375", fg="#EFEFEF", font="Raleway 12 bold", padx=7, pady=7, activebackground="black", \
-                   activeforeground="white", relief="flat", highlightcolor="#112D4E")     
-table1['columns'] = ("Id", "Nombre", "Descripcion", "Precio", "Contenido")
 
-table1.column("#0", width=0, stretch="NO")
-table1.column("Id", width=40, minwidth=40, anchor="center", stretch="NO")
-table1.column("Nombre", width=125, minwidth=125, anchor="w", stretch="NO")
-table1.column("Descripcion", width=250, minwidth=250, anchor="w", stretch="NO")
-table1.column("Precio", width=87, minwidth=87, anchor="center", stretch="NO")
-table1.column("Contenido", width=100, minwidth=100, anchor="w", stretch="NO")
+columns = ('id', 'nombre', 'desc', "precio", "content")
+tree = ttk.Treeview(frame1, columns=columns, show='headings')
 
-table1.heading("#0", text="", anchor="w")
-table1.heading("Id", text="Id", anchor="center")
-table1.heading("Nombre", text="Nombre", anchor="center")
-table1.heading("Descripcion", text="Descripcion", anchor="center")
-table1.heading("Precio", text="Precio", anchor="center")
-table1.heading("Contenido", text="Contenido", anchor="center")
+# define headings
+tree.heading('id', text='Id')
+tree.heading('nombre', text='Nombre')
+tree.heading('desc', text='Descripcion')
+tree.heading('precio', text='Precio')
+tree.heading('content', text='Contenido')
+
+articulos = []
+dbList()
+tree.delete(*tree.get_children())
+# add data to the treeview
+for articulo in articulos:
+    tree.insert('', 'end', values=articulo)
+
+def item_selected(event):
+    for selected_item in tree.selection():
+        item = tree.item(selected_item)
+        record = item['values']
+        # show a message
+        showinfo(title='Information', message=','.join(record))
+
+
+tree.bind('<<TreeviewSelect>>', item_selected)
+
+tree.grid(row=0, column=0, sticky='nsew')
+
+# add a scrollbar
+#scrollbar = ttk.Scrollbar(root, orient=tk.VERTICAL, command=tree.yview)
+#tree.configure(yscroll=scrollbar.set)
+#scrollbar.grid(row=0, column=1, sticky='ns')
+
+#guardar = Button(frame1, text="ACEPTAR", bg="#00ADB5", fg="black", font="Raleway 12 bold", padx=7, pady=7, activebackground="black", \
+#                   activeforeground="white", relief="flat", highlightcolor="#112D4E", command=inicio_save)
+#salir = Button(frame1, text="CANCELAR", bg="#EA5455", fg="white", font="Raleway 12 bold", padx=7, pady=7,activebackground="gray", \
+#                   activeforeground="black", relief="flat", highlightcolor="#112D4E", command=inicio_can)
+#search = Button(frame1, text="Buscar", bg="#205375", fg="#EFEFEF", font="Raleway 12 bold", padx=7, pady=7, activebackground="black", \
+#                   activeforeground="white", relief="flat", highlightcolor="#112D4E")     
+
+
 
 #records = cursor.fetchall()
 #print("Total de articulos: ", cursor.rowcount)
 
-count = 1
-while count <= cursor.rowcount():
-  table1.insert(parent="", index="end", iid=0, text="1", values=())
-  count = count + 1
-
-table1.insert(parent="", index="end", iid=count, text="1", values=(1, "Gatorade", "Bebida Energetica", 27, "400ml"))
 
 root.mainloop()
