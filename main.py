@@ -10,9 +10,9 @@ height = 450
 width = 800
 
 dbConfig = {
-  'user': 'maybe',
-  'password': 'butter',
-  'host': 'localhost',
+  'user': 'admin',
+  'password': 'rotoplas77',
+  'host': 'crud.copdm5l66brq.us-east-1.rds.amazonaws.com',
   'database': 'crud',
   'raise_on_warnings': True
 }
