@@ -10,9 +10,9 @@ height = 450
 width = 800
 
 dbConfig = {
-  'user': '',
-  'password': '',
-  'host': '',
+  'user': 'maybe',
+  'password': 'butter',
+  'host': 'localhost',
   'database': 'crud',
   'raise_on_warnings': True
 }
@@ -129,21 +129,32 @@ def DBguardar():
       messagebox.showinfo("GUARDADO","Se guardo el registro\t")
 
 def DBedit():
-    pop_up.deiconify()
-    name.place(rely=0.25, relx=0.04, relheight=0.15, relwidth=0.2)
-    detail.place(rely=0.25, relx=0.25, relheight=0.15, relwidth=0.2)
-    price.place(rely=0.25, relx=0.5, relheight=0.15, relwidth=0.2)
-    neto.place(rely=0.25, relx=0.65, relheight=0.15, relwidth=0.2)
-    save.place(rely=0.65, relx=0.2, relheight=0.2, relwidth=0.22)
-    exit.place(rely=0.65, relx=0.6, relheight=0.2, relwidth=0.22)
+    if not tree.selection():
+        messagebox.showwarning("ERROR", "Favor de seleccionar una fila")
+    else:
+        curItem = tree.focus()
+        contents =(tree.item(curItem))
+        selecteditem = contents['values']
+            
+        connection()
+        cursor.execute("INSERT INTO 'name, detail, price, neto` WHERE `id` = %d" % selecteditem[0])
+        cursor.execute("commit")
+
+        #tree.delete(curItem)
+        
+        pop_up.deiconify()
+        name.place(rely=0.25, relx=0.04, relheight=0.15, relwidth=0.2)
+        detail.place(rely=0.25, relx=0.27, relheight=0.15, relwidth=0.2)
+        price.place(rely=0.25, relx=0.5, relheight=0.15, relwidth=0.2)
+        neto.place(rely=0.25, relx=0.75, relheight=0.15, relwidth=0.2)
+        save.place(rely=0.65, relx=0.2, relheight=0.2, relwidth=0.22)
+        exit.place(rely=0.65, relx=0.6, relheight=0.2, relwidth=0.22)
+        close()
 
 def item_selected(event):
     for selected_item in tree.selection():
         item = tree.item(selected_item)
         record = item['values']
-        # show a message
-        #showinfo(title='Information', message=','.join(record))
-
 
 def DBdelete():
     if not tree.selection():
@@ -158,12 +169,30 @@ def DBdelete():
             connection()
             cursor.execute("DELETE FROM `articulos` WHERE `id` = %d" % selecteditem[0])
             cursor.execute("commit")
-            messagebox.showinfo(title="Registro ah sido borrado")
+            messagebox.showinfo("BIEN","Registro ah sido borrado")
 
             tree.delete(curItem)
             close()
-            frame1.place_forget()
-            frame.place()
+
+def update():
+    name = str(data1.get())
+    detail = str(data2.get())
+    price = str(data3.get())
+    neto = str(data4.get())
+
+    if(name=="" or detail=="" or price=="" or neto==""):
+      messagebox.showwarning("INCORRECTO","Todos los campos deben ser llenados")
+    else:
+      connection()
+      cursor.execute("UPDATE `articulos` SET (nombre, detalle, precio, contenido) where(%s, %s, %s, %s)")
+      cursor.execute("commit")
+
+    name.delete(0, 100)
+    detail.delete(0, 100)
+    price.delete(0, 100)
+    neto.delete(0, 100)
+    pop_up.withdraw()
+    messagebox.showinfo("BIEN","Se registro el cambio")
 
 def salir2():
     frame2.place_forget()
@@ -184,7 +213,6 @@ def escape():
     price.delete(0, 100)
     neto.delete(0, 100)
     pop_up.withdraw()
-    frame.place()
 
 def CloseWindow():
     root.quit()
@@ -263,7 +291,7 @@ detail = Entry(pop_up, bg="#0D7377", font="Poppins 11 bold", fg="white", relief=
 price = Entry(pop_up, bg="#0D7377", font="Poppins 11 bold", fg="white", relief="flat", justify="center")
 neto = Entry(pop_up, bg="#0D7377", font="Poppins 11 bold", fg="white", relief="flat", justify="center")
 save = Button(pop_up, text="BORRAR FILA", bg="#00ADB5", fg="black", font="Raleway 12 bold", padx=7, pady=7, activebackground="black", \
-                   activeforeground="white", relief="flat", highlightcolor="#112D4E")
+                   activeforeground="white", relief="flat", highlightcolor="#112D4E", command=update)
 exit = Button(pop_up, text="Cancelar", bg="#EA5455", fg="white", font="Raleway 12 bold", padx=7, pady=7,activebackground="gray", \
                    activeforeground="black", relief="flat", highlightcolor="#112D4E", command=escape)
 
