@@ -10,9 +10,9 @@ height = 450
 width = 800
 
 dbConfig = {
-  'user': '',
-  'password': '',
-  'host': '',
+  'user': 'maybe',
+  'password': 'butter',
+  'host': 'localhost',
   'database': 'crud',
   'raise_on_warnings': True
 }
@@ -131,8 +131,8 @@ def DBguardar():
 def dbUpdate():
     _name = str(name.get())
     _detail = str(detail.get())
-    _price = str(data3.get())
-    _neto = str(data4.get())
+    _price = str(price.get())
+    _neto = str(neto.get())
     _id = int(currId)
 
     print(_id)
@@ -151,6 +151,7 @@ def dbUpdate():
     neto.delete(0, 100)
     pop_up.withdraw()
     messagebox.showinfo("BIEN","Se registro el cambio")
+    tabla()
 
 def edit():
     global currId
@@ -252,19 +253,19 @@ cerrar.place(rely=0.6, relx=0.7, relheight=0.15, relwidth=0.22)
 
 frame2 = Frame(root, bg="#222831")
 label1 = Label(frame2, text="Ingrese los datos necesarios", bg="#222831", fg="gray", font="Ubuntu 18 bold", padx=20, pady=20)
-label2 = Label(frame2, text="Ingrese el nombre del producto:", bg="#222831", fg="gray", font="Poppins 11 bold", padx=20, pady=20)
+label2 = Label(frame2, text="Nombre:", bg="#222831", fg="gray", font="Poppins 11 bold", padx=20, pady=20)
 data1 = Entry(frame2, bg="#0D7377", font="Poppins 11 bold", fg="white", relief="flat", justify="center")
-label3 = Label(frame2, text="Ingrese la descripcion del producto:", bg="#222831", fg="gray", font="Poppins 11 bold", padx=20, pady=20)
+label3 = Label(frame2, text="Descripcion:", bg="#222831", fg="gray", font="Poppins 11 bold", padx=20, pady=20)
 data2 = Entry(frame2, bg="#0D7377", font="Poppins 11 bold", fg="white", relief="flat", justify="center")
-label4 = Label(frame2, text="Ingrese el precio producto:", bg="#222831", fg="gray", font="Poppins 11 bold", padx=20, pady=20)
+label4 = Label(frame2, text="Precio:", bg="#222831", fg="gray", font="Poppins 11 bold", padx=20, pady=20)
 data3 = Entry(frame2, bg="#0D7377", font="Poppins 11 bold", fg="white", relief="flat", justify="center")
-label5 = Label(frame2, text="Cantidad de contenido del producto:", bg="#222831", fg="gray", font="Poppins 11 bold", padx=20, pady=20)
+label5 = Label(frame2, text="Contenido:", bg="#222831", fg="gray", font="Poppins 11 bold", padx=20, pady=20)
 data4 = Entry(frame2, bg="#0D7377", font="Poppins 11 bold", fg="white", relief="flat", justify="center")
 boton3 = Button(frame2, text="GUARDAR", bg="#00ADB5", fg="black", font="Raleway 12 bold", padx=7, pady=7,activebackground="black", \
                    activeforeground="white", relief="flat", highlightcolor="#112D4E", command=DBguardar)
 nope = Button(frame2, text="CANCELAR", bg="#EA5455", fg="white", font="Raleway 12 bold", padx=7, pady=7,activebackground="gray", \
                    activeforeground="black", relief="flat", highlightcolor="#112D4E", command=salir2)
-label_pop = Label(frame2, text="Ingrese el nummero ID:", bg="#222831", fg="gray", font="Poppins 11 bold", padx=20, pady=20)
+label_pop = Label(frame2, text="ID:", bg="#222831", fg="gray", font="Poppins 11 bold", padx=20, pady=20)
 id_pop = Entry(frame2, bg="#0D7377", font="Poppins 11 bold", fg="white", relief="flat", justify="center")
 
 #### This is the thrid frame ####
@@ -298,7 +299,7 @@ name = Entry(pop_up, bg="#0D7377", font="Poppins 11 bold", fg="white", relief="f
 detail = Entry(pop_up, bg="#0D7377", font="Poppins 11 bold", fg="white", relief="flat", justify="center")
 price = Entry(pop_up, bg="#0D7377", font="Poppins 11 bold", fg="white", relief="flat", justify="center")
 neto = Entry(pop_up, bg="#0D7377", font="Poppins 11 bold", fg="white", relief="flat", justify="center")
-save = Button(pop_up, text="BORRAR FILA", bg="#00ADB5", fg="black", font="Raleway 12 bold", padx=7, pady=7, activebackground="black", \
+save = Button(pop_up, text="Guardar", bg="#00ADB5", fg="black", font="Raleway 12 bold", padx=7, pady=7, activebackground="black", \
                    activeforeground="white", relief="flat", highlightcolor="#112D4E", command=dbUpdate)
 exit = Button(pop_up, text="Cancelar", bg="#EA5455", fg="white", font="Raleway 12 bold", padx=7, pady=7,activebackground="gray", \
                    activeforeground="black", relief="flat", highlightcolor="#112D4E", command=escape)
