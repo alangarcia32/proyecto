@@ -10,13 +10,13 @@ height = 450
 width = 800
 
 dbConfig = {
-  'user': 'admin',
-  'password': 'rotoplas77',
-  'host': 'crud.copdm5l66brq.us-east-1.rds.amazonaws.com',
+  'user': 'maybe',
+  'password': 'butter',
+  'host': 'localhost',
   'database': 'crud',
   'raise_on_warnings': True
 }
-# mydb = connection.MySQLConnection(user="maybe", password="sbutter", host="localhost", database="crud")
+# mydb = connection.MySQLConnection(user="maybe", password="butter", host="localhost", database="crud")
 # user="root", password="huli"
 global tree
 articulos = []
@@ -61,7 +61,6 @@ def dbList():
 def tabla():
     columns = ('id', 'nombre', 'desc', "precio", "content")
     tree = ttk.Treeview(frame1, columns=columns, show='headings')
-    tree.place(rely=0.3, relx=0.04, relheight=0.65, relwidth=0.75)
 
     tree.heading('id', text='Id')
     tree.heading('nombre', text='Nombre')
@@ -78,6 +77,7 @@ def tabla():
     tree.bind('<<TreeviewSelect>>', item_selected)
 
     tree.grid(row=0, column=0, sticky='nsew')
+    tree.place(rely=0.3, relx=0.04, relheight=0.65, relwidth=0.75)
 
 root = Tk()
 root.title("HOLLY HULI")
@@ -97,7 +97,7 @@ def ventana1():
     nope.place(rely=0.68, relx=0.21, relheight=0.14, relwidth=0.2)
 
 def ventana2():
-    tabla()    
+    tabla()
     frame1.place(relwidth=1, relheight=1)
     busqueda.place(rely=0.07, relx=0.04, relheight=0.06, relwidth=0.6)
     search.place(rely=0.07, relx=0.65, relheight=0.06, relwidth=0.12)  
@@ -131,7 +131,12 @@ def DBguardar():
 
 def DBedit():
     pop_up.deiconify()
-
+    name.place(rely=0.25, relx=0.04, relheight=0.15, relwidth=0.2)
+    detail.place(rely=0.25, relx=0.25, relheight=0.15, relwidth=0.2)
+    price.place(rely=0.25, relx=0.5, relheight=0.15, relwidth=0.2)
+    neto.place(rely=0.25, relx=0.65, relheight=0.15, relwidth=0.2)
+    save.place(rely=0.65, relx=0.2, relheight=0.2, relwidth=0.22)
+    exit.place(rely=0.65, relx=0.6, relheight=0.2, relwidth=0.22)
 
 def item_selected(event):
     for selected_item in tree.selection():
@@ -182,6 +187,9 @@ def escape():
     pop_up.withdraw()
     frame.place()
 
+def CloseWindow():
+    root.quit()
+
 #### This is the main frame ####
 
 canvas = Canvas(root, height=height, width=width)
@@ -195,11 +203,15 @@ label.place(relheight=0.5, relwidth=1)
 
 boton1 = Button(frame, text="Agregar Productos", bg="#00ADB5", fg="black", font="Raleway 11 bold", padx=7, pady=7, activebackground="black",\
                     activeforeground="white", relief="flat", highlightcolor="#112D4E", command=ventana1)
-boton1.place(rely=0.6, relx=0.25, relheight=0.15, relwidth=0.22)
+boton1.place(rely=0.6, relx=0.1, relheight=0.15, relwidth=0.22)
 
 boton2 = Button(frame, text="Editar Tablas", bg="#00ADB5", fg="black", font="Raleway 11 bold", padx=7, pady=7, activebackground="black",\
                     activeforeground="white", relief="flat", highlightcolor="#112D4E", command=ventana2)
-boton2.place(rely=0.6, relx=0.55, relheight=0.15, relwidth=0.22)
+boton2.place(rely=0.6, relx=0.4, relheight=0.15, relwidth=0.22)
+
+cerrar= Button(frame, text="Cerra el Programa", bg="#00ADB5", fg="black", font="Raleway 11 bold", padx=7, pady=7, activebackground="black",\
+                    activeforeground="white", relief="flat", highlightcolor="#112D4E", command=CloseWindow)
+cerrar.place(rely=0.6, relx=0.7, relheight=0.15, relwidth=0.22)
 
 #### This is the first frame ####
 
@@ -238,7 +250,7 @@ search = Button(frame1, text="Buscar", bg="#205375", fg="#EFEFEF", font="Raleway
 
 pop_up = Tk()
 pop_up.title("EDITAR")
-canvas2 = Canvas(pop_up, height=200, width=600)
+canvas2 = Canvas(pop_up, height=200, width=700)
 canvas2.pack()
 taco = Frame(canvas2, bg="#222831")
 taco.place(relwidth=1, relheight=1)
