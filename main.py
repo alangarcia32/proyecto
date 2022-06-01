@@ -10,9 +10,9 @@ height = 450
 width = 800
 
 dbConfig = {
-  'user': 'admin',
-  'password': 'rotoplas77',
-  'host': 'crud.copdm5l66brq.us-east-1.rds.amazonaws.com',
+  'user': '',
+  'password': '',
+  'host': '',
   'database': 'crud',
   'raise_on_warnings': True
 }
@@ -158,7 +158,7 @@ def DBdelete():
             connection()
             cursor.execute("DELETE FROM `articulos` WHERE `id` = %d" % selecteditem[0])
             cursor.execute("commit")
-            messagebox.showinfo(text="Registro ah sido borrado")
+            messagebox.showinfo(title="Registro ah sido borrado")
 
             tree.delete(curItem)
             close()
