@@ -84,13 +84,13 @@ root.title("HOLLY HULI")
 def ventana1():
     frame2.place(relwidth=1, relheight=1)
     label1.place(relheight=0.2, relwidth=1)
-    label2.place(rely=0.15, relx=0.04, relheight=0.18, relwidth=0.36)
+    label2.place(rely=0.15, relx=0.04, relheight=0.18, relwidth=0.14)
     data1.place(rely=0.28, relx=0.06, relheight=0.07, relwidth=0.35)
-    label3.place(rely=0.38, relx=0.04, relheight=0.07, relwidth=0.4)
+    label3.place(rely=0.38, relx=0.04, relheight=0.07, relwidth=0.16)
     data2.place(rely=0.46, relx=0.06, relheight=0.07, relwidth=0.35)
-    label4.place(rely=0.15, relx=0.52, relheight=0.18, relwidth=0.36)
+    label4.place(rely=0.15, relx=0.52, relheight=0.18, relwidth=0.15)
     data3.place(rely=0.28, relx=0.56, relheight=0.07, relwidth=0.36)
-    label5.place(rely=0.38, relx=0.52, relheight=0.07, relwidth=0.45)
+    label5.place(rely=0.38, relx=0.52, relheight=0.07, relwidth=0.19)
     data4.place(rely=0.46, relx=0.56, relheight=0.07, relwidth=0.36)
     boton3.place(rely=0.68, relx=0.56, relheight=0.14, relwidth=0.2)
     nope.place(rely=0.68, relx=0.21, relheight=0.14, relwidth=0.2)
@@ -127,6 +127,27 @@ def DBguardar():
       close()
       frame.place()
       messagebox.showinfo("GUARDADO","Se guardo el registro\t")
+
+def dbSearch():
+    tree.delete(*tree.get_children())
+    connection()
+    lookUp = str(busqueda.get())
+    print(lookUp)
+    query = "SELECT * FROM articulos WHERE nombre LIKE '%" + lookUp + "%'" 
+    print(query)
+    cursor.execute(query)
+
+    fetch = cursor.fetchall()
+    articulos.clear()
+    for data in fetch:
+        articulos.append((data[0], data[1], data[2], data[3], data[4]))
+    for articulo in articulos:
+        tree.insert('', 'end', values=articulo)
+
+    tree.bind('<<TreeviewSelect>>', item_selected)
+
+    print(articulos)
+    close()
 
 def dbUpdate():
     _name = str(name.get())
@@ -234,18 +255,18 @@ canvas.pack()
 frame = Frame(root, bg="#222831")
 frame.place(relwidth=1, relheight=1)
 
-label = Label(frame, text="¿Qué le gustaría hacer?", bg="#222831", fg="gray", font="Ubuntu 20 bold", padx=20, pady=20)
+label = Label(frame, text="¿Qué le gustaría hacer?", bg="#222831", fg="gray", font="Ubuntu 22 bold", padx=20, pady=20)
 label.place(relheight=0.5, relwidth=1)
 
-boton1 = Button(frame, text="Agregar Productos", bg="#00ADB5", fg="black", font="Raleway 11 bold", padx=7, pady=7, activebackground="black",\
+boton1 = Button(frame, text="Agregar Productos", bg="#00ADB5", fg="black", font="Raleway 13 bold", padx=7, pady=7, activebackground="black",\
                     activeforeground="white", relief="flat", highlightcolor="#112D4E", command=ventana1)
 boton1.place(rely=0.6, relx=0.1, relheight=0.15, relwidth=0.22)
 
-boton2 = Button(frame, text="Editar Tablas", bg="#00ADB5", fg="black", font="Raleway 11 bold", padx=7, pady=7, activebackground="black",\
+boton2 = Button(frame, text="Ver Tablas", bg="#00ADB5", fg="black", font="Raleway 13 bold", padx=7, pady=7, activebackground="black",\
                     activeforeground="white", relief="flat", highlightcolor="#112D4E", command=ventana2)
 boton2.place(rely=0.6, relx=0.4, relheight=0.15, relwidth=0.22)
 
-cerrar= Button(frame, text="Cerra el Programa", bg="#00ADB5", fg="black", font="Raleway 11 bold", padx=7, pady=7, activebackground="black",\
+cerrar= Button(frame, text="Cerra el Programa", bg="#00ADB5", fg="black", font="Raleway 13 bold", padx=7, pady=7, activebackground="black",\
                     activeforeground="white", relief="flat", highlightcolor="#112D4E", command=CloseWindow)
 cerrar.place(rely=0.6, relx=0.7, relheight=0.15, relwidth=0.22)
 
@@ -253,37 +274,36 @@ cerrar.place(rely=0.6, relx=0.7, relheight=0.15, relwidth=0.22)
 
 frame2 = Frame(root, bg="#222831")
 label1 = Label(frame2, text="Ingrese los datos necesarios", bg="#222831", fg="gray", font="Ubuntu 18 bold", padx=20, pady=20)
-label2 = Label(frame2, text="Nombre:", bg="#222831", fg="gray", font="Poppins 11 bold", padx=20, pady=20)
-data1 = Entry(frame2, bg="#0D7377", font="Poppins 11 bold", fg="white", relief="flat", justify="center")
-label3 = Label(frame2, text="Descripcion:", bg="#222831", fg="gray", font="Poppins 11 bold", padx=20, pady=20)
-data2 = Entry(frame2, bg="#0D7377", font="Poppins 11 bold", fg="white", relief="flat", justify="center")
-label4 = Label(frame2, text="Precio:", bg="#222831", fg="gray", font="Poppins 11 bold", padx=20, pady=20)
-data3 = Entry(frame2, bg="#0D7377", font="Poppins 11 bold", fg="white", relief="flat", justify="center")
-label5 = Label(frame2, text="Contenido:", bg="#222831", fg="gray", font="Poppins 11 bold", padx=20, pady=20)
-data4 = Entry(frame2, bg="#0D7377", font="Poppins 11 bold", fg="white", relief="flat", justify="center")
-boton3 = Button(frame2, text="GUARDAR", bg="#00ADB5", fg="black", font="Raleway 12 bold", padx=7, pady=7,activebackground="black", \
+label2 = Label(frame2, text="Nombre:", bg="#222831", fg="gray", font="Poppins 13 bold", padx=20, pady=20)
+data1 = Entry(frame2, bg="#0D7377", font="Poppins 13 bold", fg="white", relief="flat", justify="center")
+label3 = Label(frame2, text="Descripcion:", bg="#222831", fg="gray", font="Poppins 13 bold", padx=20, pady=20)
+data2 = Entry(frame2, bg="#0D7377", font="Poppins 13 bold", fg="white", relief="flat", justify="center")
+label4 = Label(frame2, text="Precio:", bg="#222831", fg="gray", font="Poppins 13 bold", padx=20, pady=20)
+data3 = Entry(frame2, bg="#0D7377", font="Poppins 13 bold", fg="white", relief="flat", justify="center")
+label5 = Label(frame2, text="Contenido:", bg="#222831", fg="gray", font="Poppins 13 bold", padx=20, pady=20)
+data4 = Entry(frame2, bg="#0D7377", font="Poppins 13 bold", fg="white", relief="flat", justify="center")
+boton3 = Button(frame2, text="GUARDAR", bg="#00ADB5", fg="black", font="Raleway 14 bold", padx=7, pady=7,activebackground="black", \
                    activeforeground="white", relief="flat", highlightcolor="#112D4E", command=DBguardar)
-nope = Button(frame2, text="CANCELAR", bg="#EA5455", fg="white", font="Raleway 12 bold", padx=7, pady=7,activebackground="gray", \
+nope = Button(frame2, text="CANCELAR", bg="#EA5455", fg="white", font="Raleway 14 bold", padx=7, pady=7,activebackground="gray", \
                    activeforeground="black", relief="flat", highlightcolor="#112D4E", command=salir2)
-label_pop = Label(frame2, text="ID:", bg="#222831", fg="gray", font="Poppins 11 bold", padx=20, pady=20)
-id_pop = Entry(frame2, bg="#0D7377", font="Poppins 11 bold", fg="white", relief="flat", justify="center")
+label_pop = Label(frame2, text="ID:", bg="#222831", fg="gray", font="Poppins 13 bold", padx=20, pady=20)
+id_pop = Entry(frame2, bg="#0D7377", font="Poppins 13 bold", fg="white", relief="flat", justify="center")
 
 #### This is the thrid frame ####
 
 frame1 = Frame(root, bg="#222831")
 titulo = Label(frame1, text="Selecciona la fila que quires usar y escoge una de los botenes de la derecha", bg="#222831", \
-                   fg="gray", font="Ubuntu 12 bold", padx=20, pady=20)
+                   fg="gray", font="Ubuntu 14 bold", padx=20, pady=20)
 busqueda = Entry(frame1, bg="#0D7377", font="Poppins 13 bold", fg="white", relief="flat", justify="left")
 
-editar = Button(frame1, text="EDITAR FILA", bg="#00ADB5", fg="black", font="Raleway 12 bold", padx=7, pady=7, activebackground="black", \
+editar = Button(frame1, text="EDITAR FILA", bg="#00ADB5", fg="black", font="Raleway 14 bold", padx=7, pady=7, activebackground="black", \
                    activeforeground="white", relief="flat", highlightcolor="#112D4E", command=edit)
-borrar = Button(frame1, text="BORRAR FILA", bg="#00ADB5", fg="black", font="Raleway 12 bold", padx=7, pady=7, activebackground="black", \
+borrar = Button(frame1, text="BORRAR FILA", bg="#00ADB5", fg="black", font="Raleway 14 bold", padx=7, pady=7, activebackground="black", \
                    activeforeground="white", relief="flat", highlightcolor="#112D4E", command=DBdelete)
-salir = Button(frame1, text="SALIR", bg="#EA5455", fg="white", font="Raleway 12 bold", padx=7, pady=7,activebackground="gray", \
+salir = Button(frame1, text="SALIR", bg="#EA5455", fg="white", font="Raleway 14 bold", padx=7, pady=7,activebackground="gray", \
                    activeforeground="black", relief="flat", highlightcolor="#112D4E", command=salir0)
-search = Button(frame1, text="Buscar", bg="#205375", fg="#EFEFEF", font="Raleway 12 bold", padx=7, pady=7, activebackground="black", \
-                   activeforeground="white", relief="flat", highlightcolor="#112D4E")     
-
+search = Button(frame1, text="Buscar", bg="#205375", fg="#EFEFEF", font="Raleway 14 bold", padx=7, pady=7, activebackground="black", \
+                   activeforeground="white", relief="flat", highlightcolor="#112D4E", command=dbSearch)     
 
 columns = ('id', 'nombre', 'desc', "precio", "content")
 tree = ttk.Treeview(frame1, columns=columns, show='headings')
@@ -295,13 +315,13 @@ canvas2.pack()
 taco = Frame(canvas2, bg="#222831")
 taco.place(relwidth=1, relheight=1)
 pop_up.withdraw()
-name = Entry(pop_up, bg="#0D7377", font="Poppins 11 bold", fg="white", relief="flat", justify="center")
-detail = Entry(pop_up, bg="#0D7377", font="Poppins 11 bold", fg="white", relief="flat", justify="center")
-price = Entry(pop_up, bg="#0D7377", font="Poppins 11 bold", fg="white", relief="flat", justify="center")
-neto = Entry(pop_up, bg="#0D7377", font="Poppins 11 bold", fg="white", relief="flat", justify="center")
-save = Button(pop_up, text="Guardar", bg="#00ADB5", fg="black", font="Raleway 12 bold", padx=7, pady=7, activebackground="black", \
+name = Entry(pop_up, bg="#0D7377", font="Poppins 13 bold", fg="white", relief="flat", justify="center")
+detail = Entry(pop_up, bg="#0D7377", font="Poppins 13 bold", fg="white", relief="flat", justify="center")
+price = Entry(pop_up, bg="#0D7377", font="Poppins 13 bold", fg="white", relief="flat", justify="center")
+neto = Entry(pop_up, bg="#0D7377", font="Poppins 13 bold", fg="white", relief="flat", justify="center")
+save = Button(pop_up, text="Guardar", bg="#00ADB5", fg="black", font="Raleway 14 bold", padx=7, pady=7, activebackground="black", \
                    activeforeground="white", relief="flat", highlightcolor="#112D4E", command=dbUpdate)
-exit = Button(pop_up, text="Cancelar", bg="#EA5455", fg="white", font="Raleway 12 bold", padx=7, pady=7,activebackground="gray", \
+exit = Button(pop_up, text="Cancelar", bg="#EA5455", fg="white", font="Raleway 14 bold", padx=7, pady=7,activebackground="gray", \
                    activeforeground="black", relief="flat", highlightcolor="#112D4E", command=escape)
 
 root.mainloop()
