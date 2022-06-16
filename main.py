@@ -57,6 +57,11 @@ def dbList():
     print("Successfully read the data from database")
     close()
 
+def dbReiniciar():
+    busqueda.delete(0,100)
+    tree.delete(*tree.get_children())
+    tabla()
+
 def tabla():
    
     tree.place(rely=0.3, relx=0.04, relheight=0.65, relwidth=0.75)
@@ -99,7 +104,8 @@ def ventana2():
     tabla()
     frame1.place(relwidth=1, relheight=1)
     busqueda.place(rely=0.07, relx=0.04, relheight=0.06, relwidth=0.6)
-    search.place(rely=0.07, relx=0.65, relheight=0.06, relwidth=0.12)  
+    search.place(rely=0.07, relx=0.65, relheight=0.06, relwidth=0.12) 
+    reiniciar.place(rely=0.07, relx=0.79, relheight=0.06, relwidth=0.15)
     titulo.place(rely=0.18, relx=0.04, relheight=0.08, relwidth=0.75)
     borrar.place(rely=0.4, relx=0.81, relheight=0.1, relwidth=0.17)
     editar.place(rely=0.6, relx=0.81, relheight=0.1, relwidth=0.17)
@@ -303,7 +309,9 @@ borrar = Button(frame1, text="BORRAR FILA", bg="#00ADB5", fg="black", font="Rale
 salir = Button(frame1, text="SALIR", bg="#EA5455", fg="white", font="Raleway 14 bold", padx=7, pady=7,activebackground="gray", \
                    activeforeground="black", relief="flat", highlightcolor="#112D4E", command=salir0)
 search = Button(frame1, text="Buscar", bg="#205375", fg="#EFEFEF", font="Raleway 14 bold", padx=7, pady=7, activebackground="black", \
-                   activeforeground="white", relief="flat", highlightcolor="#112D4E", command=dbSearch)     
+                   activeforeground="white", relief="flat", highlightcolor="#112D4E", command=dbSearch)
+reiniciar = Button(frame1, text="Reiniciar", bg="#205375", fg="#EFEFEF", font="Raleway 14 bold", padx=7, pady=7, activebackground="black", \
+                   activeforeground="white", relief="flat", highlightcolor="#112D4E", command=dbReiniciar)      
 
 columns = ('id', 'nombre', 'desc', "precio", "content")
 tree = ttk.Treeview(frame1, columns=columns, show='headings')
